@@ -1,0 +1,43 @@
+{
+  "entities": {
+    "Room": {
+      "title": "Game Room",
+      "description": "Represents a multiplayer game session",
+      "type": "object",
+      "properties": {
+        "status": { "type": "string", "enum": ["waiting", "playing", "finished"] },
+        "currentCelebrity": { "type": "string" },
+        "imageUrl": { "type": "string" },
+        "revealProgress": { "type": "number", "description": "0 to 100 representing how much is revealed" },
+        "hiddenPieces": { "type": "array", "items": { "type": "number" }, "description": "Indices of tiles still hidden" },
+        "lastRevealAt": { "type": "string", "format": "date-time" },
+        "winner": { "type": "string", "description": "UID of the winner for the current round" },
+        "hostId": { "type": "string" }
+      },
+      "required": ["status", "hostId"]
+    },
+    "Player": {
+      "title": "Player",
+      "description": "A participant in a game room",
+      "type": "object",
+      "properties": {
+        "displayName": { "type": "string" },
+        "score": { "type": "number" },
+        "isReady": { "type": "boolean" },
+        "lastGuess": { "type": "string" },
+        "joinedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["displayName", "score"]
+    }
+  },
+  "firestore": {
+    "/rooms/{roomId}": {
+      "schema": "Room",
+      "description": "Main room state"
+    },
+    "/rooms/{roomId}/players/{playerId}": {
+      "schema": "Player",
+      "description": "Players in the room"
+    }
+  }
+}

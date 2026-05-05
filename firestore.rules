@@ -1,0 +1,58 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Default deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Standard Helpers
+    function isSignedIn() { return request.auth != null; }
+    function isValidId(id) { return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$'); }
+    function incoming() { return request.resource.data; }
+    function existing() { return resource.data; }
+    
+    // Entity Validations
+    function isValidRoom(data) {
+      return data.keys().hasAll(['status', 'hostId']) &&
+             data.status in ['waiting', 'playing', 'finished'] &&
+             data.hostId is string &&
+             (!('currentCelebrity' in data) || data.currentCelebrity is string) &&
+             (!('revealProgress' in data) || data.revealProgress is number);
+    }
+
+    function isValidPlayer(data) {
+      return data.keys().hasAll(['displayName', 'score']) &&
+             data.displayName is string && data.displayName.size() <= 50 &&
+             data.score is number &&
+             (!('isReady' in data) || data.isReady is bool);
+    }
+
+    // Room Rules
+    match /rooms/{roomId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && isValidId(roomId) && isValidRoom(incoming()) && incoming().hostId == request.auth.uid;
+      allow update: if isSignedIn() && (
+        // Host can update anything
+        (existing().hostId == request.auth.uid && isValidRoom(incoming())) ||
+        // Other players can only update trivial state if needed, but usually only host manages room
+        // One exception: a player might "join" and trigger a count or something, 
+        // but players join via subcollection.
+        false
+      );
+      allow delete: if isSignedIn() && existing().hostId == request.auth.uid;
+
+      // Players Subcollection
+      match /players/{playerId} {
+        allow read: if isSignedIn();
+        allow create: if isSignedIn() && playerId == request.auth.uid && isValidPlayer(incoming()) && exists(/databases/$(database)/documents/rooms/$(roomId));
+        allow update: if isSignedIn() && playerId == request.auth.uid && (
+          // Player can update their own score/status/guess
+          isValidPlayer(incoming()) && 
+          incoming().diff(existing()).affectedKeys().hasOnly(['score', 'isReady', 'lastGuess', 'displayName'])
+        );
+        allow delete: if isSignedIn() && (playerId == request.auth.uid || get(/databases/$(database)/documents/rooms/$(roomId)).data.hostId == request.auth.uid);
+      }
+    }
+  }
+}

@@ -1,0 +1,5 @@
+{
+  "name": "Mosaic Guess: Celeb Edition",
+  "description": "A real-time multiplayer image reveal quiz game. Guess the famous person as the mosaic pieces vanish!",
+  "requestFramePermissions": []
+}

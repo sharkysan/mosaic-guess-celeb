@@ -8,6 +8,8 @@ import confetti from 'canvas-confetti';
 import { Leaderboard } from './Leaderboard';
 import { MosaicGrid } from './MosaicGrid';
 import { WinnerOverlay } from './WinnerOverlay';
+import { generateCelebrityHint } from '../../services/geminiService';
+import { Sparkles, Info } from 'lucide-react';
 
 interface GameProps {
   id: string;
@@ -22,14 +24,16 @@ export function Game({ id, user }: GameProps) {
   const [winnerData, setWinnerData] = useState<{ name: string; celebrity: string; imageUrl: string } | null>(null);
   const [imgLoaded, setImgLoaded] = useState(false);
   const [isError, setIsError] = useState(false);
+  const [imgFetchError, setImgFetchError] = useState(false);
   const revealTimerRef = useRef<any>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (room?.status === 'playing' && !room?.winner) {
       inputRef.current?.focus();
+      setImgFetchError(false);
     }
-  }, [room?.status, room?.winner]);
+  }, [room?.status, room?.winner, room?.currentCelebrity]);
 
   useEffect(() => {
     const unsubRoom = onSnapshot(doc(db, 'rooms', id), (snap) => {
@@ -109,13 +113,9 @@ export function Game({ id, user }: GameProps) {
       const toRevealCount = Math.max(2, Math.floor(TOTAL_TILES / 40)); 
       const toReveal: number[] = [];
       
-      // Sort to ensure we can easily pick from the "top" of the remaining pieces
-      currentHidden.sort((a, b) => a - b);
-      
+      // Pick random tiles from the entire list
       for(let i=0; i<toRevealCount && currentHidden.length > 0; i++) {
-        // Pick from the first 25% of available pieces to favor the top
-        const range = Math.max(1, Math.floor(currentHidden.length * 0.25));
-        const idx = Math.floor(Math.random() * range);
+        const idx = Math.floor(Math.random() * currentHidden.length);
         toReveal.push(currentHidden.splice(idx, 1)[0]);
       }
 
@@ -139,14 +139,23 @@ export function Game({ id, user }: GameProps) {
     const hidden = Array.from({ length: TOTAL_TILES }, (_, i) => i);
     
     setWinnerData(null);
+    
+    // Optimistically update room state immediately to start round
     await updateDoc(doc(db, 'rooms', id), {
       status: 'playing',
       currentCelebrity: celeb.name,
       imageUrl: celeb.imageUrl,
+      currentHint: "Thinking of a hint...",
       hiddenPieces: hidden,
       revealProgress: 0,
       winner: null,
       lastRevealAt: serverTimestamp()
+    });
+
+    // Generate hint in background and update
+    const hint = await generateCelebrityHint(celeb.name);
+    await updateDoc(doc(db, 'rooms', id), {
+      currentHint: hint
     });
   };
 
@@ -245,6 +254,27 @@ export function Game({ id, user }: GameProps) {
             />
           </AnimatePresence>
         </div>
+
+        <AnimatePresence>
+          {room.status === 'playing' && room.currentHint && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              className="bg-indigo-950/40 border border-indigo-500/30 rounded-2xl p-5 flex items-start gap-4 backdrop-blur-sm"
+            >
+              <div className="bg-indigo-600/20 p-2 rounded-xl text-indigo-400 shrink-0">
+                <Sparkles size={20} className="animate-pulse" />
+              </div>
+              <div>
+                <p className="text-xs font-bold text-indigo-400 uppercase tracking-widest mb-1">AI Hint</p>
+                <p className="text-lg font-medium text-white/90 leading-relaxed italic">
+                  "{room.currentHint}"
+                </p>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         <motion.div 
           animate={isError ? { x: [-10, 10, -10, 10, 0] } : {}}

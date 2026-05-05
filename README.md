@@ -11,6 +11,11 @@ A real-time, multiplayer image-reveal quiz game built with React and Firebase.
 - **Live Leaderboard**: Track scores and see who's winning in real-time.
 - **Modern UI**: Polished, dark-themed interface with smooth animations.
 
+## Screenshot
+
+![Mosaic Guess Game Screenshot](https://images.unsplash.com/photo-1614850523296-d8c1af93d400?q=80&w=2070&auto=format&fit=crop)
+*Note: This is a placeholder depicting a modern quiz interface. The actual app features real-time celebrity mosaic revealing.*
+
 ## Tech Stack
 
 - **Frontend**: React 19, Vite, Tailwind CSS, Framer Motion

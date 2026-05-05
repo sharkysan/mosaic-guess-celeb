@@ -191,11 +191,15 @@ function Game({ id, user }: { id: string, user: User }) {
     }
     
     if (room?.winner && !localWinner) {
-      const winner = players.find(p => p.id === room.winner);
-      if (winner) {
-        setLocalWinner(winner.displayName);
-        if (room.winner === user.uid) {
-          confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+      if (room.winner === 'nobody') {
+        setLocalWinner("No one");
+      } else {
+        const winner = players.find(p => p.id === room.winner);
+        if (winner) {
+          setLocalWinner(winner.displayName);
+          if (room.winner === user.uid) {
+            confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+          }
         }
       }
     } else if (!room?.winner) {
@@ -261,6 +265,7 @@ function Game({ id, user }: { id: string, user: User }) {
       await updateDoc(doc(db, 'rooms', id), {
         winner: user.uid,
         status: 'waiting',
+        hiddenPieces: [] // Reveal everything on win
       });
       await updateDoc(doc(db, 'rooms', id, 'players', user.uid), {
         score: increment(1)
@@ -309,7 +314,23 @@ function Game({ id, user }: { id: string, user: User }) {
             className="w-full flex items-center justify-center gap-2 bg-indigo-600 text-white font-bold py-3 rounded-xl hover:bg-indigo-500 transition-all cursor-pointer shadow-lg active:scale-95"
           >
             <Play size={20} fill="currentColor" />
-            {room.status === 'waiting' ? 'Start Round' : 'Next Celebrity'}
+            {room.status === 'waiting' ? (room.winner ? 'Next Celebrity' : 'Start Round') : 'Next Celebrity'}
+          </button>
+        )}
+
+        {room.hostId === user.uid && room.status === 'playing' && (
+          <button
+            onClick={async () => {
+              await updateDoc(doc(db, 'rooms', id), {
+                status: 'waiting',
+                winner: 'nobody',
+                hiddenPieces: [] // Reveal everything on skip
+              });
+            }}
+            className="w-full flex items-center justify-center gap-2 bg-zinc-800 text-white font-bold py-3 rounded-xl hover:bg-zinc-700 transition-all cursor-pointer shadow-lg active:scale-95"
+          >
+            <RefreshCw size={20} />
+            Skip / Reveal
           </button>
         )}
       </div>

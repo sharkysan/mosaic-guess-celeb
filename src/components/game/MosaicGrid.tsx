@@ -33,7 +33,7 @@ export function MosaicGrid({ imageUrl, imgLoaded, setImgLoaded, revealedIndices,
       <img 
         src={imageUrl} 
         alt="Celebrity" 
-        className={`w-full h-full object-cover transition-opacity duration-700 ${imgLoaded ? 'opacity-100' : 'opacity-0'}`} 
+        className={`w-full h-full object-cover transition-all duration-1000 ${imgLoaded ? 'opacity-100 scale-100' : 'opacity-0 scale-110'}`} 
         onLoad={() => setImgLoaded(true)}
         onError={() => {
           console.error("Image failed to load:", imageUrl);
@@ -41,6 +41,9 @@ export function MosaicGrid({ imageUrl, imgLoaded, setImgLoaded, revealedIndices,
         }}
         referrerPolicy="no-referrer"
       />
+      
+      {/* Centered Focus Vignette */}
+      <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_center,transparent_0%,rgba(0,0,0,0.4)_100%)] opacity-60" />
       
       {!imgLoaded && (
         <div className="absolute inset-0 flex items-center justify-center bg-zinc-900">
@@ -55,9 +58,17 @@ export function MosaicGrid({ imageUrl, imgLoaded, setImgLoaded, revealedIndices,
               {!revealedIndices.has(i) && (
                 <motion.div
                   initial={false}
-                  exit={{ opacity: 0, scale: 1.1, filter: 'blur(4px)' }}
-                  transition={{ duration: 0.6, ease: "easeInOut" }}
-                  className="absolute inset-0 bg-zinc-900 border-[0.25px] border-white/5"
+                  exit={{ 
+                    opacity: 0, 
+                    scale: 1.2, 
+                    filter: 'blur(8px)',
+                    zIndex: 10
+                  }}
+                  transition={{ 
+                    duration: 0.8, 
+                    ease: [0.43, 0.13, 0.23, 0.96] 
+                  }}
+                  className="absolute inset-0 bg-zinc-950 border-[0.25px] border-white/5"
                 />
               )}
             </AnimatePresence>

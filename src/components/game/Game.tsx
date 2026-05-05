@@ -108,8 +108,14 @@ export function Game({ id, user }: GameProps) {
       
       const toRevealCount = Math.max(2, Math.floor(TOTAL_TILES / 40)); 
       const toReveal: number[] = [];
+      
+      // Sort to ensure we can easily pick from the "top" of the remaining pieces
+      currentHidden.sort((a, b) => a - b);
+      
       for(let i=0; i<toRevealCount && currentHidden.length > 0; i++) {
-        const idx = Math.floor(Math.random() * currentHidden.length);
+        // Pick from the first 25% of available pieces to favor the top
+        const range = Math.max(1, Math.floor(currentHidden.length * 0.25));
+        const idx = Math.floor(Math.random() * range);
         toReveal.push(currentHidden.splice(idx, 1)[0]);
       }
 

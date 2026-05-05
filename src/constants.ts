@@ -44,7 +44,7 @@ export const CELEBRITIES = [
   { name: "Joe Biden", imageUrl: "https://wsrv.nl/?url=https%3A%2F%2Fcommons.wikimedia.org%2Fwiki%2FSpecial%3AFilePath%2FJoe_Biden_official_portrait_2021.jpg&w=1000&h=1000&fit=cover&a=top&precrop=true" },
   { name: "Vladimir Putin", imageUrl: "https://wsrv.nl/?url=https%3A%2F%2Fcommons.wikimedia.org%2Fwiki%2FSpecial%3AFilePath%2FVladimir_Putin_1-11-2021_%28cropped%29.jpg&w=1000&h=1000&fit=cover&a=top&precrop=true" },
   { name: "Pope Francis", imageUrl: "https://wsrv.nl/?url=https%3A%2F%2Fcommons.wikimedia.org%2Fwiki%2FSpecial%3AFilePath%2FPope_Francis_Korea_Haemi_Castle_19_%284x5_cropped%29.jpg&w=1000&h=1000&fit=cover&a=top&precrop=true" },
-  { name: "Prince Harry", imageUrl: "https://wsrv.nl/?url=https%3A%2F%2Fcommons.wikimedia.org%2Fwiki%2FSpecial%3AFilePath%2FPrince_Harry_in_2019.jpg&w=1000&h=1000&fit=cover&a=top&precrop=true" },
+  { name: "Prince Harry", imageUrl: "https://wsrv.nl/?url=https%3A%2F%2Fcommons.wikimedia.org%2Fwiki%2FSpecial%3AFilePath%2FPrince_Harry_Duke_of_Sussex_2019.jpg&w=1000&h=1000&fit=cover&a=top&precrop=true" },
   { name: "Meghan Markle", imageUrl: "https://wsrv.nl/?url=https%3A%2F%2Fcommons.wikimedia.org%2Fwiki%2FSpecial%3AFilePath%2FMeghan_Markle_in_2018.jpg&w=1000&h=1000&fit=cover&a=top&precrop=true" },
   { name: "Kim Kardashian", imageUrl: "https://wsrv.nl/?url=https%3A%2F%2Fcommons.wikimedia.org%2Fwiki%2FSpecial%3AFilePath%2FKim_Kardashian_West_2014.jpg&w=1000&h=1000&fit=cover&a=top&precrop=true" },
   { name: "Kylie Jenner", imageUrl: "https://wsrv.nl/?url=https%3A%2F%2Fcommons.wikimedia.org%2Fwiki%2FSpecial%3AFilePath%2FKylie_Jenner1_%28cropped%29.png&w=1000&h=1000&fit=cover&a=top&precrop=true" },

@@ -1,9 +1,29 @@
 import { GoogleGenAI } from "@google/genai";
 
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+let aiInstance: GoogleGenAI | null = null;
+
+function getAI() {
+  if (!aiInstance) {
+    let apiKey = "";
+    try {
+      apiKey = (typeof process !== "undefined" && process.env) ? process.env.GEMINI_API_KEY || "" : "";
+    } catch (e) {
+      console.warn("Could not access process.env.GEMINI_API_KEY", e);
+    }
+    
+    if (!apiKey) {
+      console.warn("GEMINI_API_KEY is not defined in the environment.");
+    }
+    aiInstance = new GoogleGenAI({ apiKey });
+  }
+  return aiInstance;
+}
 
 export async function generateCelebrityHint(name: string): Promise<string> {
   try {
+    const ai = getAI();
+    console.log(`Generating hint for: ${name}`);
+    
     const response = await ai.models.generateContent({
       model: "gemini-3-flash-preview",
       contents: `Provide a short, intriguing, one-sentence hint about the celebrity "${name}".
@@ -15,9 +35,22 @@ export async function generateCelebrityHint(name: string): Promise<string> {
       },
     });
 
-    return response.text?.trim() || "No hint available for this celebrity.";
+    if (!response || !response.text) {
+      console.warn("Gemini returned empty response for hint.");
+      return "A mysterious star awaits your guess.";
+    }
+
+    const hint = response.text.trim();
+    console.log(`Generated hint: ${hint}`);
+    return hint;
   } catch (error) {
-    console.error("Error generating hint:", error);
+    const errorMessage = error instanceof Error ? error.message : JSON.stringify(error);
+    console.error("Error generating hint with Gemini:", errorMessage);
+    
+    if (errorMessage.includes("RESOURCE_EXHAUSTED") || errorMessage.includes("429")) {
+      return "The AI hint generator is currently at capacity. Time to use your intuition!";
+    }
+    
     return "A mysterious star awaits your guess.";
   }
 }

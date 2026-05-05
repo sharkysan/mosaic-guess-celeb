@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { motion } from 'motion/react';
 import { Trophy } from 'lucide-react';
 
@@ -17,6 +17,19 @@ interface WinnerOverlayProps {
 }
 
 export function WinnerOverlay({ winnerData, currentUserId, currentUserDisplayName, isHost, onNextRound }: WinnerOverlayProps) {
+  useEffect(() => {
+    if (!isHost || !winnerData) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Enter') {
+        onNextRound();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isHost, winnerData, onNextRound]);
+
   if (!winnerData) return null;
 
   return (

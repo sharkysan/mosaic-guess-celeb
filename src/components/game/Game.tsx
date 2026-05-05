@@ -21,7 +21,15 @@ export function Game({ id, user }: GameProps) {
   const [revealedIndices, setRevealedIndices] = useState<Set<number>>(new Set());
   const [winnerData, setWinnerData] = useState<{ name: string; celebrity: string; imageUrl: string } | null>(null);
   const [imgLoaded, setImgLoaded] = useState(false);
+  const [isError, setIsError] = useState(false);
   const revealTimerRef = useRef<any>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (room?.status === 'playing' && !room?.winner) {
+      inputRef.current?.focus();
+    }
+  }, [room?.status, room?.winner]);
 
   useEffect(() => {
     const unsubRoom = onSnapshot(doc(db, 'rooms', id), (snap) => {
@@ -149,7 +157,12 @@ export function Game({ id, user }: GameProps) {
     e.preventDefault();
     if (!guess.trim() || room.status !== 'playing' || room.winner) return;
 
-    const fuse = new Fuse([room.currentCelebrity], { threshold: 0.35 });
+    const fuse = new Fuse([room.currentCelebrity], { 
+      threshold: 0.4,
+      location: 0,
+      distance: 100,
+      minMatchCharLength: 2
+    });
     const result = fuse.search(guess.trim());
 
     if (result.length > 0) {
@@ -165,6 +178,8 @@ export function Game({ id, user }: GameProps) {
         lastGuess: g
       });
     } else {
+      setIsError(true);
+      setTimeout(() => setIsError(false), 500);
       setGuess('');
     }
   };
@@ -225,9 +240,14 @@ export function Game({ id, user }: GameProps) {
           </AnimatePresence>
         </div>
 
-        <div className="bg-zinc-900/50 backdrop-blur-md border border-white/10 rounded-2xl p-4 shadow-xl">
+        <motion.div 
+          animate={isError ? { x: [-10, 10, -10, 10, 0] } : {}}
+          transition={{ duration: 0.4 }}
+          className="bg-zinc-900/50 backdrop-blur-md border border-white/10 rounded-2xl p-4 shadow-xl"
+        >
           <form onSubmit={handleGuess} className="flex gap-3">
             <input
+              ref={inputRef}
               type="text"
               disabled={room.status !== 'playing' || !!room.winner}
               placeholder={room.status === 'playing' ? "Who is this celebrity?" : "Wait for round to start..."}
@@ -243,7 +263,7 @@ export function Game({ id, user }: GameProps) {
               <Send size={24} />
             </button>
           </form>
-        </div>
+        </motion.div>
       </div>
     </div>
   );

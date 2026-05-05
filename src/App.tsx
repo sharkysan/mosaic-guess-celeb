@@ -140,7 +140,7 @@ function Game({ id, user }: { id: string, user: User }) {
   const [players, setPlayers] = useState<any[]>([]);
   const [guess, setGuess] = useState('');
   const [revealedIndices, setRevealedIndices] = useState<Set<number>>(new Set());
-  const [localWinner, setLocalWinner] = useState<string | null>(null);
+  const [winnerData, setWinnerData] = useState<{ name: string; celebrity: string; imageUrl: string } | null>(null);
   const revealTimerRef = useRef<any>(null);
 
   useEffect(() => {
@@ -183,31 +183,33 @@ function Game({ id, user }: { id: string, user: User }) {
   }, [id, user.uid, user.displayName, user.photoURL]);
 
   useEffect(() => {
-    if (room?.hiddenPieces) {
-      const all = Array.from({ length: TOTAL_TILES }, (_, i) => i);
-      const hidden = new Set(room.hiddenPieces);
-      const revealed = all.filter(i => !hidden.has(i));
-      setRevealedIndices(new Set(revealed));
-    }
+    // Sync revealed indices
+    const hiddenArr = room?.hiddenPieces || [];
+    const all = Array.from({ length: TOTAL_TILES }, (_, i) => i);
+    const hiddenSet = new Set(hiddenArr);
+    const revealed = all.filter(i => !hiddenSet.has(i));
+    setRevealedIndices(new Set(revealed));
     
-    if (room?.winner && !localWinner) {
+    // Handle winner data transition
+    if (room?.winner && !winnerData) {
       if (room.winner === 'nobody') {
-        setLocalWinner("No one");
+        setWinnerData({ name: "No one", celebrity: room.currentCelebrity, imageUrl: room.imageUrl });
       } else {
         const winner = players.find(p => p.id === room.winner);
         if (winner) {
-          setLocalWinner(winner.displayName);
+          setWinnerData({ name: winner.displayName, celebrity: room.currentCelebrity, imageUrl: room.imageUrl });
           if (room.winner === user.uid) {
             confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
           }
         }
       }
     } else if (!room?.winner) {
-      setLocalWinner(null);
+      setWinnerData(null);
     }
-  }, [room?.hiddenPieces, room?.winner, players, user.uid, localWinner]);
+  }, [room?.hiddenPieces, room?.winner, room?.currentCelebrity, room?.imageUrl, players, user.uid, winnerData]);
 
   const startRevealLoop = (roomId: string, initialHidden: number[]) => {
+    stopRevealLoop(); // Always clear previous loop before starting
     let currentHidden = [...initialHidden];
     revealTimerRef.current = setInterval(async () => {
       if (currentHidden.length === 0) {
@@ -215,7 +217,7 @@ function Game({ id, user }: { id: string, user: User }) {
         return;
       }
       
-      const toRevealCount = Math.max(2, Math.floor(TOTAL_TILES / 30)); // Reveal enough pieces
+      const toRevealCount = Math.max(2, Math.floor(TOTAL_TILES / 30)); 
       const toReveal: number[] = [];
       for(let i=0; i<toRevealCount && currentHidden.length > 0; i++) {
         const idx = Math.floor(Math.random() * currentHidden.length);
@@ -365,31 +367,49 @@ function Game({ id, user }: { id: string, user: User }) {
           )}
 
           <AnimatePresence>
-            {localWinner && (
+            {winnerData && (
               <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                className="absolute inset-0 flex items-center justify-center bg-black/60 backdrop-blur-sm p-8 z-20"
+                className="absolute inset-0 flex items-center justify-center bg-zinc-950/90 backdrop-blur-md p-8 z-20"
               >
-                <div className="text-center space-y-4">
-                  <div className="inline-block p-4 bg-amber-500 rounded-full mb-2">
-                    <Trophy size={48} className="text-black" />
-                  </div>
-                  <h4 className="text-4xl font-black text-white italic uppercase tracking-tighter">
-                    {localWinner === user.displayName ? "YOU GUESSED IT!" : `${localWinner} GUESSED IT!`}
-                  </h4>
-                  <p className="text-2xl font-bold text-amber-400">
-                    It's {room.currentCelebrity}
-                  </p>
-                  {room.hostId === user.uid && (
-                    <button
-                      onClick={startNextRound}
-                      className="mt-4 bg-white text-black px-8 py-3 rounded-full font-bold hover:bg-zinc-200 transition-all cursor-pointer"
-                    >
-                      Next Round
-                    </button>
-                  )}
+                <div className="text-center space-y-6 max-w-sm w-full">
+                  <motion.div 
+                    initial={{ scale: 0.8, y: 20 }}
+                    animate={{ scale: 1, y: 0 }}
+                    className="space-y-4"
+                  >
+                    <div className="relative mx-auto w-48 h-48">
+                      <img 
+                        src={winnerData.imageUrl} 
+                        alt={winnerData.celebrity} 
+                        className="w-full h-full object-cover rounded-2xl shadow-2xl border-4 border-amber-500"
+                        referrerPolicy="no-referrer"
+                      />
+                      <div className="absolute -top-4 -right-4 bg-amber-500 p-3 rounded-full shadow-lg">
+                        <Trophy size={24} className="text-black" />
+                      </div>
+                    </div>
+                    
+                    <div className="space-y-1">
+                      <h4 className="text-3xl font-black text-white italic uppercase tracking-tighter leading-none">
+                        {winnerData.name === user.displayName ? "YOU GUESSED IT!" : `${winnerData.name} GUESSED IT!`}
+                      </h4>
+                      <p className="text-xl font-bold text-amber-400">
+                        It's {winnerData.celebrity}
+                      </p>
+                    </div>
+
+                    {room.hostId === user.uid && (
+                      <button
+                        onClick={startNextRound}
+                        className="w-full bg-white text-black px-8 py-4 rounded-2xl font-black uppercase tracking-tight hover:bg-zinc-200 transition-all cursor-pointer shadow-xl active:scale-95"
+                      >
+                        Next Round
+                      </button>
+                    )}
+                  </motion.div>
                 </div>
               </motion.div>
             )}

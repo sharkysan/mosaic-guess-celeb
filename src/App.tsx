@@ -321,16 +321,18 @@ function Game({ id, user }: { id: string, user: User }) {
               <img src={room.imageUrl} alt="Celebrity" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
               <div className="absolute inset-0 grid grid-cols-12 grid-rows-12">
                 {Array.from({ length: TOTAL_TILES }).map((_, i) => (
-                  <AnimatePresence key={i}>
-                    {!revealedIndices.has(i) && (
-                      <motion.div
-                        initial={false}
-                        exit={{ opacity: 0, scale: 1.2, filter: 'blur(10px)' }}
-                        transition={{ duration: 0.8, ease: "easeOut" }}
-                        className="bg-zinc-900 border-[0.5px] border-white/5"
-                      />
-                    )}
-                  </AnimatePresence>
+                  <div key={i} className="w-full h-full relative">
+                    <AnimatePresence>
+                      {!revealedIndices.has(i) && (
+                        <motion.div
+                          initial={false}
+                          exit={{ opacity: 0, scale: 1.2, filter: 'blur(10px)' }}
+                          transition={{ duration: 0.8, ease: "easeOut" }}
+                          className="absolute inset-0 bg-zinc-900 border-[0.5px] border-white/5"
+                        />
+                      )}
+                    </AnimatePresence>
+                  </div>
                 ))}
               </div>
             </>
@@ -344,8 +346,8 @@ function Game({ id, user }: { id: string, user: User }) {
           <AnimatePresence>
             {localWinner && (
               <motion.div
-                initial={{ opacity: 0, scale: 0.9, y: 20 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0 }}
                 className="absolute inset-0 flex items-center justify-center bg-black/60 backdrop-blur-sm p-8 z-20"
               >
@@ -429,11 +431,11 @@ export default function App() {
         <Auth user={user} />
       </header>
 
-      <main className="pt-24 min-h-screen flex flex-col items-center relative z-10">
+      <main className="pt-24 min-h-screen flex flex-col items-center justify-center relative z-10">
         {!user ? (
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
             className="text-center space-y-8 p-12"
           >
             <div className="relative inline-block">

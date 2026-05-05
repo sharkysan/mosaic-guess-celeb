@@ -27,7 +27,7 @@ A real-time, multiplayer celebrity guessing game featuring a dynamic mosaic reve
 
 ## Screenshot
 
-![Mosaic Quiz Interface](https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=2070&auto=format&fit=crop)
+![Mosaic Quiz Interface](screen.png)
 *The app features a sophisticated dark UI with neon accents and real-time multiplayer coordination.*
 
 ## Getting Started

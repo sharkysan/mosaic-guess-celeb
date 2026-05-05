@@ -1,20 +1,42 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+# Mosaic Guess: Celeb Edition
 
-# Run and deploy your AI Studio app
+A real-time, multiplayer image-reveal quiz game built with React and Firebase.
 
-This contains everything you need to run your app locally.
+## Features
 
-View your app in AI Studio: https://ai.studio/apps/f81a6023-6a92-4bc4-baf6-14976147e094
+- **Real-time Multiplayer**: Compete with friends in live game rooms.
+- **Mosaic Reveal**: Images are hidden behind a grid and revealed piece by piece.
+- **Celebrity Quiz**: Guess the famous person before the image is fully revealed.
+- **Fuzzy Name Matching**: Intelligent guess validation that allows for small typos.
+- **Live Leaderboard**: Track scores and see who's winning in real-time.
+- **Modern UI**: Polished, dark-themed interface with smooth animations.
 
-## Run Locally
+## Tech Stack
 
-**Prerequisites:**  Node.js
+- **Frontend**: React 19, Vite, Tailwind CSS, Framer Motion
+- **Backend**: Firebase Firestore, Firebase Authentication
+- **Utilities**: Fuse.js (fuzzy matching), Canvas Confetti
 
+## Getting Started
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+### Prerequisites
+
+- Node.js (v18+)
+- A Firebase project with Firestore and Google Authentication enabled.
+
+### Installation
+
+1. Clone the repository.
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+3. Set up environment variables in a `.env` file (see `.env.example`).
+4. Start the development server:
+   ```bash
+   npm run dev
+   ```
+
+## License
+
+This project is licensed under the Apache-2.0 License.

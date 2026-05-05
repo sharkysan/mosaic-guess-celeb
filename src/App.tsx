@@ -429,7 +429,7 @@ export default function App() {
         <Auth user={user} />
       </header>
 
-      <main className="pt-24 min-h-screen flex flex-col items-center justify-center relative z-10">
+      <main className="pt-24 min-h-screen flex flex-col items-center relative z-10">
         {!user ? (
           <motion.div
             initial={{ opacity: 0, y: 20 }}

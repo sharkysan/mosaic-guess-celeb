@@ -4,13 +4,7 @@ let aiInstance: GoogleGenAI | null = null;
 
 function getAI() {
   if (!aiInstance) {
-    let apiKey = "";
-    try {
-      apiKey = (typeof process !== "undefined" && process.env) ? process.env.GEMINI_API_KEY || "" : "";
-    } catch (e) {
-      console.warn("Could not access process.env.GEMINI_API_KEY", e);
-    }
-    
+    const apiKey = process.env.GEMINI_API_KEY || "";
     if (!apiKey) {
       console.warn("GEMINI_API_KEY is not defined in the environment.");
     }
@@ -22,28 +16,23 @@ function getAI() {
 export async function generateCelebrityHint(name: string): Promise<string> {
   try {
     const ai = getAI();
-    console.log(`Generating hint for: ${name}`);
     
+    // Use the model alias prescribed in the skill
     const response = await ai.models.generateContent({
       model: "gemini-3-flash-preview",
-      contents: `Provide a short, intriguing, one-sentence hint about the celebrity "${name}".
-      The hint should NOT mention their name. 
-      It should be something that helps players guess who they are, perhaps mentioning a famous role, achievement, or distinctive trait.`,
+      contents: `Provide a short, intriguing, one-sentence hint about the celebrity "${name}". 
+      Do not mention their name in the hint. 
+      Keep it mysterious but helpful.`,
       config: {
-        systemInstruction: "You are a helpful assistant for a celebrity guessing game called Mosaic Minds. Your task is to provide cryptic but helpful one-sentence hints.",
+        systemInstruction: "You are a helpful assistant for a celebrity guessing game called Mosaic Quiz. Your task is to provide cryptic but helpful one-sentence hints.",
         temperature: 0.7,
       },
     });
 
-    if (!response || !response.text) {
-      console.warn("Gemini returned empty response for hint.");
-      return "A mysterious star awaits your guess.";
-    }
-
-    const hint = response.text.trim();
+    const hint = response.text?.trim() || "A mysterious star awaits your guess.";
     console.log(`Generated hint: ${hint}`);
     return hint;
-  } catch (error) {
+  } catch (error: any) {
     const errorMessage = error instanceof Error ? error.message : JSON.stringify(error);
     console.error("Error generating hint with Gemini:", errorMessage);
     

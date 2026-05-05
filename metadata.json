@@ -1,5 +1,5 @@
 {
-  "name": "Mosaic Guess: Celeb Edition",
-  "description": "A real-time multiplayer image reveal quiz game. Guess the famous person as the mosaic pieces vanish!",
+  "name": "Mosaic Quiz",
+  "description": "A real-time multiplayer celebrity guessing game with AI-powered hints and a dynamic mosaic revealing system.",
   "requestFramePermissions": []
 }

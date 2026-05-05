@@ -1,26 +1,34 @@
-# Mosaic Guess: Celeb Edition
+# Mosaic Quiz
 
-A real-time, multiplayer image-reveal quiz game built with React and Firebase.
+A real-time, multiplayer celebrity guessing game featuring a dynamic mosaic reveal system and AI-generated hints.
 
 ## Features
 
-- **Real-time Multiplayer**: Compete with friends in live game rooms.
-- **Mosaic Reveal**: Images are hidden behind a grid and revealed piece by piece.
-- **Celebrity Quiz**: Guess the famous person before the image is fully revealed.
-- **Fuzzy Name Matching**: Intelligent guess validation that allows for small typos.
-- **Live Leaderboard**: Track scores and see who's winning in real-time.
-- **Modern UI**: Polished, dark-themed interface with smooth animations.
+- **Real-time Multiplayer**: Compete with friends in live game rooms with synchronized state.
+- **Dynamic Mosaic Reveal**: Celebrity images are hidden behind a cryptographic-style grid, revealed randomly tile by tile.
+- **AI-Generated Hints**: Integrated **Google Gemini API** provides cryptic, context-aware hints for every celebrity.
+- **Fuzzy Guess Management**: Smart validation using Fuse.js allows for slight typos in celebrity names.
+- **Live Leaderboard**: Track competitive progress across multiple rounds.
+- **Polished Aesthetics**: Dark-themed, glassmorphic UI built with Tailwind CSS and Framer Motion.
 
-## Screenshot
+## How it Works
 
-![Mosaic Guess Game Screenshot](https://images.unsplash.com/photo-1614850523296-d8c1af93d400?q=80&w=2070&auto=format&fit=crop)
-*Note: This is a placeholder depicting a modern quiz interface. The actual app features real-time celebrity mosaic revealing.*
+1. **Host a Room**: Share your room ID with friends.
+2. **The Reveal**: The celebrity portrait begins to reveal randomly.
+3. **Get Hints**: If you're stuck, the AI hint system provides a clue.
+4. **Guess Fast**: Type your guess in the chat-style input. The first correct guess wins the round!
 
 ## Tech Stack
 
 - **Frontend**: React 19, Vite, Tailwind CSS, Framer Motion
-- **Backend**: Firebase Firestore, Firebase Authentication
-- **Utilities**: Fuse.js (fuzzy matching), Canvas Confetti
+- **Backend**: Firebase Firestore (Real-time DB), Firebase Authentication
+- **AI**: Google Gemini API (@google/genai)
+- **Utilities**: Fuse.js (Fuzzy search), Canvas Confetti (Celebration)
+
+## Screenshot
+
+![Mosaic Quiz Interface](https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=2070&auto=format&fit=crop)
+*The app features a sophisticated dark UI with neon accents and real-time multiplayer coordination.*
 
 ## Getting Started
 
